@@ -5,7 +5,7 @@ I'm a seasoned Front-End Developer and experienced with some full stack projects
 # Server Administration
 I run my own mailserver - send an email to me (at) jasonchua.net. I have a higher APM on a Linux command line than I do in Starcraft.
 
-# Find me on:
+## Find me on:
 
 [LinkedIn](https://www.linkedin.com/in/jchu04/)
 
