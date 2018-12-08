@@ -1,3 +1,6 @@
+---
+layout: default
+---
 # Broadcast Technology 
 I have experience in Broadcast Technologies ranging from analog setups, to digital workflows, to IP based video routing and delivery. I'm knowledgeable about switching, camera blocking and  character generation with a deep understanding of video encoding and compression.
 # Web Development
