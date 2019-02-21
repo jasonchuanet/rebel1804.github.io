@@ -6,7 +6,7 @@ I have experience in Broadcast Technologies ranging from analog setups, to digit
 # Web Development
 I'm a seasoned Front-End Developer and experienced with some full stack projects ranging from a traditional LAMP stack to nodeJS based deployments.
 # Server Administration
-I run my own mailserver - send an email to me (at) jasonchua.net. I have a higher APM on a Linux command line than I do in Starcraft.
+I run my own mailserver - shoot me an email to me (at) jasonchua.net.
 
 ## Find me on:
 
