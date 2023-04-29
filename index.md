@@ -12,7 +12,7 @@ Currently, I'm broadcast engineer for KGW-TV in Portland OR. Here, I manage infr
 
 [USC Annenberg Media](https://www.uscannenbergmedia.com/author/jason-chua/)
 
-[LkldNow](https://www.lkldnow.com/author/jasonchua)
+[LkldNow](https://www.lkldnow.com/?s=Jason%20Chua)
 
 [Layers Media](https://layers.media/author/jasonchua/)
 
