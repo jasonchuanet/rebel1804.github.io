@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Difficult-to-Compress Visuals</title>
+  </head>
+  <body style="margin: 0px; overflow: hidden; background-color: rgba(0,0,0,0)!important">
+    <canvas
+      id="myCanvas"
+      height="1080"
+      width="1920"
+      <!--style="background-color: black"-->
+    ></canvas>
+  </body>
+  <script>
+    const boxes = true;
+    const lines = true;
+    const bar = true;
+
+    // Square Dimensions
+    const width = 100;
+    const length = 100;
+
+    let positionX = 0; // Starting position of the square
+    let movingRight = true; // Direction of square movement
+    const objects = (window.innerWidth * window.innerHeight) >> 14;
+
+    function draw() {
+      const canvas = document.getElementById("myCanvas");
+      const ctx = canvas.getContext("2d");
+
+      ctx.canvas.width = window.innerWidth;
+      ctx.canvas.height = window.innerHeight;
+
+      // Clear the canvas
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      // Boxes
+      if (boxes) {
+        for (let i = 0; i < objects; i++) {
+          // Generate random position and color
+          const x = Math.random() * canvas.width - width / 2;
+          const y = Math.random() * canvas.height - length / 2;
+          const color = "#" + Math.floor(Math.random() * 16777215).toString(16);
+
+          // Draw the square
+          ctx.fillStyle = color;
+          ctx.fillRect(x, y, length, width); // Drawing 10x10 squares
+        }
+      }
+      // Lines
+      if (lines) {
+        for (let i = 0; i < objects; i++) {
+          // Generate random start and end points
+          var x1 = Math.random() * canvas.width;
+          var y1 = Math.random() * canvas.height;
+          var x2 = Math.random() * canvas.width;
+          var y2 = Math.random() * canvas.height;
+
+          // Generate a random color
+          var color = "#" + Math.floor(Math.random() * 16777215).toString(16);
+
+          // Draw the line
+          ctx.beginPath();
+          ctx.moveTo(x1, y1);
+          ctx.lineTo(x2, y2);
+          ctx.strokeStyle = color;
+          ctx.lineWidth = 2;
+          ctx.stroke();
+        }
+      }
+      // Bar
+      if (bar) {
+        // Draw the white horizontal bar
+        var barHeight = canvas.height / 8; // Height of the bar
+        ctx.fillStyle = "white";
+        ctx.fillRect(
+          0,
+          canvas.height / 2 - barHeight / 2,
+          canvas.width,
+          barHeight
+        );
+
+        // Draw the black square
+        var squareSize = canvas.height / 8; // Size of the square
+        ctx.fillStyle = "black";
+        ctx.fillRect(
+          positionX,
+          canvas.height / 2 - squareSize / 2,
+          squareSize,
+          squareSize
+        );
+
+        // Update the position of the square
+        if (movingRight) {
+          positionX += 3; // Move right
+          if (positionX > canvas.width - squareSize) {
+            movingRight = false;
+          }
+        } else {
+          positionX -= 3; // Move left
+          if (positionX < 0) {
+            movingRight = true;
+          }
+        }
+      }
+      window.requestAnimationFrame(draw);
+    }
+
+    //setInterval(draw, 1000 / 60); // Update every 60th of a second
+    window.requestAnimationFrame(draw);
+  </script>
+</html>
