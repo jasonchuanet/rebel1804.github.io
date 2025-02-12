@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8" />
+    <title>Difficult-to-Compress Visuals – DOM Version</title>
+    <style>
+      html, body {
+        margin: 0;
+        padding: 0;
+        overflow: hidden;
+        background-color: transparent;
+      }
+      /* All drawn elements use absolute positioning */
+      .box, .line, .bar, .square, .fps, .objects {
+        position: absolute;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="container" style="position:fixed;top:0;left:0;width:100%;height:100%;"></div>
+    <script>
+      (() => {
+        // Feature toggles
+        const boxes = true;
+        const lines = true;
+        const bar = true;
+    
+        // Dimensions for randomly drawn squares (boxes)
+        const boxWidth = 100;
+        const boxLength = 100;
+    
+        // Variables for the moving square in the bar
+        let positionX = 0;
+        let movingRight = true;
+        let objects = 0; // Number of random objects
+    
+        // The container that fills the viewport
+        const container = document.getElementById("container");
+        let containerWidth = window.innerWidth;
+        let containerHeight = window.innerHeight;
+    
+        function resizeContainer() {
+          containerWidth = window.innerWidth;
+          containerHeight = window.innerHeight;
+          // Calculate number of objects based on container size
+          objects = (containerWidth * containerHeight) >> 14;
+        }
+        window.addEventListener("resize", resizeContainer);
+        resizeContainer();
+    
+        // Create persistent DOM elements for the bar and text so they are not recreated each frame.
+        let barElem, squareElem, fpsElem, objectsElem;
+        if (bar) {
+          barElem = document.createElement("div");
+          barElem.className = "bar";
+          container.appendChild(barElem);
+    
+          squareElem = document.createElement("div");
+          squareElem.className = "square";
+          container.appendChild(squareElem);
+        }
+    
+        fpsElem = document.createElement("div");
+        fpsElem.className = "fps";
+        fpsElem.style.fontSize = "2em";
+        fpsElem.style.fontFamily = "sans-serif";
+        container.appendChild(fpsElem);
+    
+        objectsElem = document.createElement("div");
+        objectsElem.className = "objects";
+        objectsElem.style.fontSize = "2em";
+        objectsElem.style.fontFamily = "sans-serif";
+        objectsElem.style.color = "blue";
+        container.appendChild(objectsElem);
+    
+        // For FPS calculation over a 5-second window
+        const fpsSamples = [];
+    
+        function draw() {
+          const now = performance.now();
+          fpsSamples.push(now);
+          while (fpsSamples.length && fpsSamples[0] < now - 5000) {
+            fpsSamples.shift();
+          }
+          const averageFPS = fpsSamples.length / 5;
+    
+          // Clear all nonpersistent elements by resetting innerHTML,
+          // then re-append our persistent elements.
+          container.innerHTML = "";
+          if (bar) {
+            container.appendChild(barElem);
+            container.appendChild(squareElem);
+          }
+          container.appendChild(fpsElem);
+          container.appendChild(objectsElem);
+    
+          // Draw random boxes
+          if (boxes) {
+            for (let i = 0; i < objects; i++) {
+              const x = Math.random() * containerWidth - boxWidth / 2;
+              const y = Math.random() * containerHeight - boxLength / 2;
+              const color = "#" + Math.floor(Math.random() * 16777215).toString(16);
+              const box = document.createElement("div");
+              box.className = "box";
+              box.style.left = x + "px";
+              box.style.top = y + "px";
+              box.style.width = boxLength + "px";
+              box.style.height = boxWidth + "px";
+              box.style.backgroundColor = color;
+              container.appendChild(box);
+            }
+          }
+    
+          // Draw random lines
+          if (lines) {
+            for (let i = 0; i < objects; i++) {
+              const x1 = Math.random() * containerWidth;
+              const y1 = Math.random() * containerHeight;
+              const x2 = Math.random() * containerWidth;
+              const y2 = Math.random() * containerHeight;
+              const dx = x2 - x1;
+              const dy = y2 - y1;
+              const lineLength = Math.sqrt(dx * dx + dy * dy);
+              const angle = Math.atan2(dy, dx) * (180 / Math.PI);
+              const color = "#" + Math.floor(Math.random() * 16777215).toString(16);
+              const line = document.createElement("div");
+              line.className = "line";
+              line.style.left = x1 + "px";
+              line.style.top = y1 + "px";
+              line.style.width = lineLength + "px";
+              line.style.height = "2px";
+              line.style.backgroundColor = color;
+              line.style.transform = "rotate(" + angle + "deg)";
+              line.style.transformOrigin = "0 0";
+              container.appendChild(line);
+            }
+          }
+    
+          // Draw the moving bar element
+          if (bar) {
+            const barHeight = containerHeight / 8;
+            // Update the white horizontal bar
+            barElem.style.left = "0px";
+            barElem.style.zIndex = 10;
+            barElem.style.top = (containerHeight / 2 - barHeight / 2) + "px";
+            barElem.style.width = containerWidth + "px";
+            barElem.style.height = barHeight + "px";
+            barElem.style.backgroundColor = "white";
+    
+            // Update the black moving square
+            const squareSize = barHeight;
+            squareElem.style.width = squareSize + "px";
+            squareElem.style.zIndex = 11;
+            squareElem.style.height = squareSize + "px";
+            squareElem.style.backgroundColor = "black";
+            squareElem.style.top = (containerHeight / 2 - squareSize / 2) + "px";
+            squareElem.style.left = positionX + "px";
+    
+            // Update the square's horizontal position
+            if (movingRight) {
+              positionX += containerWidth / (60 * 10);
+              if (positionX > containerWidth - squareSize) {
+                movingRight = false;
+              }
+            } else {
+              positionX -= containerWidth / (60 * 10);
+              if (positionX < 0) {
+                movingRight = true;
+              }
+            }
+          }
+    
+          // Draw FPS counter
+          let fpsText;
+          if (fpsSamples[fpsSamples.length - 1] - 5000 < 0) {
+            fpsText = "calculating...";
+            fpsElem.style.color = "gold";
+          } else {
+            fpsText = averageFPS.toFixed(1);
+            fpsElem.style.color = averageFPS < 59.94 ? "red" : "green";
+          }
+          fpsElem.textContent = "FPS (5s avg): " + fpsText;
+          fpsElem.style.zIndex = 12;
+          fpsElem.style.left = (containerWidth / 3) + "px";
+          fpsElem.style.top = (containerHeight / 2) + "px";
+    
+          objectsElem.textContent = "Objects on screen: " + (objects * 2);
+          objectsElem.style.zIndex = 12;
+          objectsElem.style.left = "0px";
+          objectsElem.style.top = (containerHeight / 2) + "px";
+    
+          window.requestAnimationFrame(draw);
+        }
+    
+        window.requestAnimationFrame(draw);
+      })();
+    </script>
+  </body>
+</html>
