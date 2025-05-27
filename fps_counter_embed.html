@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Canvas FPS Counter</title>
+  <style>
+    /* full-screen, no scrollbars, black background */
+    html, body { margin: 0; padding: 0; overflow: hidden; background: #000; }
+    canvas { display: block; }
+  </style>
+</head>
+<body>
+  <canvas id="fpsCanvas"></canvas>
+  <script>
+    const canvas = document.getElementById('fpsCanvas');
+    const ctx = canvas.getContext('2d');
+
+    // make canvas fill window
+    function resize() {
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
+    }
+    window.addEventListener('resize', resize);
+    resize();
+
+    // keep timestamps of the last 1 s
+    const samples = [];
+
+    function draw() {
+      const now = performance.now();
+      samples.push(now);
+      // drop anything older than 1 s
+      while (samples[0] < now - 1000) samples.shift();
+
+      const fps = samples.length.toString().padStart(2, '0');
+
+      // clear & draw
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      ctx.fillStyle = fps < 60 ? 'red' : 'lime';
+      ctx.font = '2em sans-serif';
+      ctx.fillText(`FPS: ${fps}`, 10, 40);
+
+      requestAnimationFrame(draw);
+    }
+    requestAnimationFrame(draw);
+  </script>
+</body>
+</html>
